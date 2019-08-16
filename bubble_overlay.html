@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="bubble_overlay.css"/>
+
+</head>
+<body>
+
+    <div id="bubble-div"></div>
+    <div id="message"></div>
+
+<script>
+    var bubbleDiv = $('#bubble-div');
+    var messageDiv = $('#message');
+    var previousData = null;
+
+    setInterval(function() {
+        $.get('current_match.json', function(data) {
+            if (JSON.stringify(data) !== previousData) {
+
+                bubbleDiv.empty();
+                for (var i = 0; i < data.ladder.length; i++) {
+                    var bot_key = data.ladder[i];
+                    var bot_data = data.bot_map[bot_key];
+                    var date = new Date(bot_data.updated_date * 1000).toLocaleString();
+                    var evaluating = i === data.sort_index || i === data.sort_index + 1;
+                    var playing = evaluating && data.needs_match;
+                    var specialClass = '';
+                    if (evaluating) {
+                        specialClass += 'evaluating';
+                    }
+                    if (playing) {
+                        specialClass += ' playing';
+                    }
+                    if (data.winner === bot_key) {
+                        specialClass += ' winner';
+                    }
+                    bubbleDiv.append('<p class="bot ' + specialClass + '">' + bot_data.name +
+                        '<br><span class="date">' + date + '</span></p>');
+                }
+
+                messageDiv.empty();
+                if (data.sort_complete) {
+                    messageDiv.append("Bubble Sort Complete!");
+                }
+                previousData = JSON.stringify(data);
+            }
+        });
+    }, 500);
+</script>
+
+</body>
+</html>
