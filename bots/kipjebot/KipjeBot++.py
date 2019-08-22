@@ -31,8 +31,6 @@ class BaseCPPAgent(BaseIndependentAgent):
                 self.logger.warn("Could not connect to server!")
 
             time.sleep(1)
-        else:
-            self.retire()
 
     def get_helper_process_request(self):
         if self.is_executable_configured():
